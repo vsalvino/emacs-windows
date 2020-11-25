@@ -1,0 +1,90 @@
+name: Build Emacs
+
+on:
+  # Every day at 2am UTC
+  schedule:
+  - cron: "0 2 * * *"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      # Checks-out repository under $GITHUB_WORKSPACE
+      - uses: actions/checkout@v2
+
+      #
+      - name: Install dependencies
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: |
+            base-devel \
+            mingw-w64-x86_64-toolchain \
+            mingw-w64-x86_64-xpm-nox \
+            mingw-w64-x86_64-libtiff \
+            mingw-w64-x86_64-giflib \
+            mingw-w64-x86_64-libpng \
+            mingw-w64-x86_64-libjpeg-turbo \
+            mingw-w64-x86_64-librsvg \
+            mingw-w64-x86_64-lcms2 \
+            mingw-w64-x86_64-jansson \
+            mingw-w64-x86_64-libxml2 \
+            mingw-w64-x86_64-gnutls \
+            mingw-w64-x86_64-zlib \
+            mingw-w64-x86_64-harfbuzz \
+            git \
+            zip
+
+      - name: Clone emacs source
+        run: git clone -b master --depth 1 git://git.sv.gnu.org/emacs.git
+
+      - name: Autogen
+        run: cd emacs; ./autogen.sh;
+
+      - name: Configure
+        run: |
+          mkdir "$GITHUB_WORKSPACE/emacs-build";
+          cd "$GITHUB_WORKSPACE/emacs-build";
+          "$GITHUB_WORKSPACE/emacs/configure" \
+            --prefix="$GITHUB_WORKSPACE/emacs-build" \
+            --enable-link-time-optimization \
+            --without-dbus \
+            --without-gconf \
+            --without-libsystemd \
+            --without-m17n-flt \
+            --without-pop \
+            --without-selinux \
+            --without-xdbe \
+            --without-xft \
+            --with-file-notification=w32 \
+            --with-json \
+            --with-w32 \
+            CFLAGS='-O3 -g0 -static';
+
+      - name: Compile
+        run: make
+
+      - name: Install
+        run: |
+          cd "$GITHUB_WORKSPACE/emacs";
+          mkdir "$GITHUB_WORKSPACE/emacs-install";
+          make install prefix="$GITHUB_WORKSPACE/emacs-install";
+
+      - name: Bundle
+        run: |
+          # Clean duplicate binary from dir
+          rm "$GITHUB_WORKSPACE/emacs-install/bin/emacs-*.exe
+          zip -r emacs.zip "$GITHUB_WORKSPACE/emacs-install"
+
+      - name: Publish
+        uses: actions/upload-artifact@v2
+        with:
+          name: emacs
+          path: emacs.zip
