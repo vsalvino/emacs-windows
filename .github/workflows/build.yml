@@ -24,23 +24,7 @@ jobs:
         with:
           msystem: MINGW64
           update: true
-          install: |
-            base-devel \
-            mingw-w64-x86_64-toolchain \
-            mingw-w64-x86_64-xpm-nox \
-            mingw-w64-x86_64-libtiff \
-            mingw-w64-x86_64-giflib \
-            mingw-w64-x86_64-libpng \
-            mingw-w64-x86_64-libjpeg-turbo \
-            mingw-w64-x86_64-librsvg \
-            mingw-w64-x86_64-lcms2 \
-            mingw-w64-x86_64-jansson \
-            mingw-w64-x86_64-libxml2 \
-            mingw-w64-x86_64-gnutls \
-            mingw-w64-x86_64-zlib \
-            mingw-w64-x86_64-harfbuzz \
-            git \
-            zip
+          install: base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-xpm-nox mingw-w64-x86_64-libtiff mingw-w64-x86_64-giflib mingw-w64-x86_64-libpng mingw-w64-x86_64-libjpeg-turbo mingw-w64-x86_64-librsvg mingw-w64-x86_64-lcms2 mingw-w64-x86_64-jansson mingw-w64-x86_64-libxml2 mingw-w64-x86_64-gnutls mingw-w64-x86_64-zlib mingw-w64-x86_64-harfbuzz git zip
 
       - name: Clone emacs source
         run: git clone -b master --depth 1 git://git.sv.gnu.org/emacs.git
