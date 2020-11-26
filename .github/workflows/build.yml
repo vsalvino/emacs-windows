@@ -53,7 +53,9 @@ jobs:
             CFLAGS='-O3 -g0 -static';
 
       - name: Compile
-        run: make
+        run: |
+          cd "$GITHUB_WORKSPACE/emacs";
+          make;
 
       - name: Install
         run: |
