@@ -19,12 +19,32 @@ jobs:
       - uses: actions/checkout@v2
 
       #
-      - name: Install dependencies
+      - name: Use MINGW64
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
-          install: base-devel binutils mingw-w64-x86_64-toolchain mingw-w64-x86_64-xpm-nox mingw-w64-x86_64-libtiff mingw-w64-x86_64-giflib mingw-w64-x86_64-libpng mingw-w64-x86_64-libjpeg-turbo mingw-w64-x86_64-librsvg mingw-w64-x86_64-lcms2 mingw-w64-x86_64-jansson mingw-w64-x86_64-libxml2 mingw-w64-x86_64-gnutls mingw-w64-x86_64-zlib mingw-w64-x86_64-harfbuzz git zip
+
+      - name: Install dependencies
+        run: |
+          pacman -Syuu \
+            base-devel \
+            binutils \
+            git \
+            mingw-w64-x86_64-giflib \
+            mingw-w64-x86_64-gnutls \
+            mingw-w64-x86_64-harfbuzz \
+            mingw-w64-x86_64-jansson \
+            mingw-w64-x86_64-lcms2 \
+            mingw-w64-x86_64-libjpeg-turbo \
+            mingw-w64-x86_64-libpng \
+            mingw-w64-x86_64-librsvg \
+            mingw-w64-x86_64-libtiff \
+            mingw-w64-x86_64-libxml2 \
+            mingw-w64-x86_64-toolchain \
+            mingw-w64-x86_64-xpm-nox \
+            mingw-w64-x86_64-zlib \
+            zip;
 
       - name: Clone emacs source
         run: git clone -b master --depth 1 git://git.sv.gnu.org/emacs.git
@@ -75,8 +95,6 @@ jobs:
 
       - name: Bundle
         run: |
-          # Clean duplicate binary from dir
-          rm $GITHUB_WORKSPACE/emacs-install/bin/emacs-*
           zip -r emacs.zip "$GITHUB_WORKSPACE/emacs-install"
 
       - name: Publish
