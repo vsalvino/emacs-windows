@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pacman -Syuu \
+          pacman -S --noconfirm --needed --overwrite * \
             base-devel \
             binutils \
             git \
